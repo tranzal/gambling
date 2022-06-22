@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class GablingMain extends StatelessWidget {
-  const GablingMain({Key? key}) : super(key: key);
+class GamblingPage extends StatelessWidget {
+  const GamblingPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return const Text('게임');
   }
 }
