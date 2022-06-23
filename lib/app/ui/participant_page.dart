@@ -12,8 +12,16 @@ class ParticipantPage extends StatefulWidget {
 
 class _ParticipantPageState extends State<ParticipantPage> {
   late ParticipantProvider _participant;
+  final nameFieldText = TextEditingController();
+  final moneyFieldText = TextEditingController();
   var name = '';
   var money = 0;
+  var id = 0;
+
+  void clearText() {
+    nameFieldText.clear();
+    moneyFieldText.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +34,13 @@ class _ParticipantPageState extends State<ParticipantPage> {
             itemCount: _participant.userList.length,
             itemBuilder: (context, index) => GestureDetector(
               onTap: () {
-
+                setState(() {
+                  name = _participant.userList[index].userName;
+                  money = _participant.userList[index].money;
+                  id = _participant.userList[index].id;
+                  nameFieldText.text = _participant.userList[index].userName;
+                  moneyFieldText.text = _participant.userList[index].money.toString();
+                });
               },
               child: Container(
                 alignment: Alignment.center,
@@ -61,6 +75,7 @@ class _ParticipantPageState extends State<ParticipantPage> {
                             this.name = name;
                           });
                         },
+                        controller: nameFieldText,
                       ),
                       TextField(
                         decoration: const InputDecoration(
@@ -73,8 +88,8 @@ class _ParticipantPageState extends State<ParticipantPage> {
                           setState(() {
                             this.money = int.parse(money.isEmpty ? '0' : money);
                           });
-                          debugPrint(this.money.toString());
                         },
+                        controller: moneyFieldText,
                       )
                     ],
                   )
@@ -84,19 +99,28 @@ class _ParticipantPageState extends State<ParticipantPage> {
                 children: <Widget>[
                   ElevatedButton(
                       onPressed: () {
-                        _participant.add(
-                            id: _participant.getLastIndex() + 1,
-                            userName: 'dddd',
-                            money: 0);
-                        setState(() {
-                          name = '';
-                          money = 0;
-                        });
+                        if(name.isNotEmpty && money != 0) {
+                          _participant.add(
+                              id: _participant.getLastIndex() + 1,
+                              userName: name,
+                              money: money);
+                          setState(() {
+                            name = '';
+                            money = 0;
+                          });
+                          clearText();
+                        }
                       },
                       child: const Text('추가')),
                   ElevatedButton(
                       onPressed: () {
-
+                          _participant.remove(id: id);
+                          setState(() {
+                            name = '';
+                            money = 0;
+                            id = 0;
+                          });
+                          clearText();
                       },
                       child: const Text('제거')
                   ),
