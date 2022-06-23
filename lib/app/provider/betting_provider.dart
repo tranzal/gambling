@@ -35,6 +35,7 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
   @override
   void bettingDefaultChange({required int bettingCost}) {
     bettingDefault = bettingCost;
+    debugPrint(bettingDefault.toString());
     notifyListeners();
   }
 

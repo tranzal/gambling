@@ -11,6 +11,8 @@ class ParticipantPage extends StatefulWidget {
 }
 
 class _ParticipantPageState extends State<ParticipantPage> {
+  final _nameFocus = FocusNode();
+  final _moneyFocus = FocusNode();
   late ParticipantProvider _participant;
   final nameFieldText = TextEditingController();
   final moneyFieldText = TextEditingController();
@@ -32,31 +34,34 @@ class _ParticipantPageState extends State<ParticipantPage> {
           flex: 1,
           child: ListView.builder(
             itemCount: _participant.userList.length,
-            itemBuilder: (context, index) => GestureDetector(
-              onTap: () {
-                setState(() {
-                  name = _participant.userList[index].userName;
-                  money = _participant.userList[index].money;
-                  id = _participant.userList[index].id;
-                  nameFieldText.text = _participant.userList[index].userName;
-                  moneyFieldText.text = _participant.userList[index].money.toString();
-                });
-              },
-              child: Container(
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    border: Border.all(
-                        color: Colors.black, width: 1, style: BorderStyle.solid)),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(_participant.userList[index].userName),
-                    Text('금액 : ${_participant.userList[index].money}'),
-                  ],
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    name = _participant.userList[index].userName;
+                    money = _participant.userList[index].money;
+                    id = _participant.userList[index].id;
+                    nameFieldText.text = _participant.userList[index].userName;
+                    moneyFieldText.text = _participant.userList[index].money.toString();
+                  });
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: _participant.userList[index].id == id ? Colors.yellow : Colors.white,
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(
+                          color: Colors.black, width: 1, style: BorderStyle.solid)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(_participant.userList[index].userName),
+                      Text('금액 : ${_participant.userList[index].money}'),
+                    ],
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ),
         Flexible(
@@ -76,6 +81,11 @@ class _ParticipantPageState extends State<ParticipantPage> {
                           });
                         },
                         controller: nameFieldText,
+                        onSubmitted: (_) {
+                          FocusScope.of(context).requestFocus(_moneyFocus);
+                        },
+                        focusNode: _nameFocus,
+                        keyboardType: TextInputType.text,
                       ),
                       TextField(
                         decoration: const InputDecoration(
@@ -89,7 +99,24 @@ class _ParticipantPageState extends State<ParticipantPage> {
                             this.money = int.parse(money.isEmpty ? '0' : money);
                           });
                         },
+                        keyboardType: TextInputType.number,
                         controller: moneyFieldText,
+                        focusNode: _moneyFocus,
+                        onSubmitted: (_) {
+                          if(name.isNotEmpty && money != 0) {
+                            _participant.add(
+                                id: _participant.getLastIndex() + 1,
+                                userName: name,
+                                money: money);
+                            setState(() {
+                              name = '';
+                              money = 0;
+                              id = 0;
+                            });
+                            clearText();
+                          }
+                          FocusScope.of(context).unfocus();
+                        },
                       )
                     ],
                   )
