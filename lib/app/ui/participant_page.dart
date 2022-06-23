@@ -107,8 +107,10 @@ class _ParticipantPageState extends State<ParticipantPage> {
                           setState(() {
                             name = '';
                             money = 0;
+                            id = 0;
                           });
                           clearText();
+                          FocusScope.of(context).unfocus();
                         }
                       },
                       child: const Text('추가')),
@@ -121,6 +123,7 @@ class _ParticipantPageState extends State<ParticipantPage> {
                             id = 0;
                           });
                           clearText();
+                          FocusScope.of(context).unfocus();
                       },
                       child: const Text('제거')
                   ),
