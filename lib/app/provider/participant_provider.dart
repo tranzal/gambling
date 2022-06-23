@@ -1,31 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:gambling/app/provider/abstract/participant_abstract.dart';
 import 'package:gambling/app/provider/model/user.dart';
 
-class ParticipantProvider extends ChangeNotifier {
+class ParticipantProvider extends ChangeNotifier implements ParticipantAbstract {
   var userList = <User>[];
 
-  add({required int id, required String userName, required int money}){
+  @override
+  void add({required int id, required String userName, required int money}){
     userList.add(User(id: id,userName: userName, money: money));
     notifyListeners();
   }
-  remove({required int id}){
-    for (var index = 0 ; index < userList.length ; index ++) {
-      if(userList[index].id == id){
-        userList.removeAt(index);
-        break;
-      }
-    }
-    findData(id: id, function: (index) => userList.removeAt(index));
 
+  @override
+  void remove({required int id}){
+    findData(id: id, function: (index) => userList.removeAt(index));
     notifyListeners();
   }
 
-  changeMoney({required int id, required int money}){
+  @override
+  void changeMoney({required int id, required int money}){
     findData(id: id, function: (index) => userList[index].money = money);
     notifyListeners();
   }
 
-  findData({required int id, required Function(int) function}) {
+  @override
+  void findData({required int id, required Function(int) function}) {
     for (var index = 0 ; index < userList.length ; index ++) {
       if(userList[index].id == id){
         function(index);
@@ -34,6 +33,7 @@ class ParticipantProvider extends ChangeNotifier {
     }
   }
 
+  @override
   int getLastIndex() {
     if(userList.isNotEmpty){
       return  userList[userList.length - 1].id;

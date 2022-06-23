@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gambling/app/provider/participant.dart';
+import 'package:gambling/app/provider/participant_provider.dart';
 import 'package:provider/provider.dart';
 
 class ParticipantPage extends StatefulWidget {
@@ -97,7 +97,7 @@ class _ParticipantPageState extends State<ParticipantPage> {
               Expanded(
                   child: Column(
                 children: <Widget>[
-                  ElevatedButton(
+                  id == 0 ? ElevatedButton(
                       onPressed: () {
                         if(name.isNotEmpty && money != 0) {
                           _participant.add(
@@ -113,7 +113,20 @@ class _ParticipantPageState extends State<ParticipantPage> {
                           FocusScope.of(context).unfocus();
                         }
                       },
-                      child: const Text('추가')),
+                      child: const Text('추가')) : ElevatedButton(
+                      onPressed: () {
+                        if(name.isNotEmpty && money != 0) {
+                          _participant.changeMoney(id: id, money: money);
+                          setState(() {
+                            name = '';
+                            money = 0;
+                            id = 0;
+                          });
+                          clearText();
+                          FocusScope.of(context).unfocus();
+                        }
+                      },
+                      child: const Text('수정')),
                   ElevatedButton(
                       onPressed: () {
                           _participant.remove(id: id);

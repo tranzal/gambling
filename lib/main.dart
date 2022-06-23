@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gambling/app/provider/participant.dart';
+import 'package:gambling/app/provider/participant_provider.dart';
 import 'package:gambling/app/ui/gambling_page.dart';
 import 'package:gambling/app/ui/participant_page.dart';
 import 'package:gambling/app/ui/setting_page.dart';
@@ -12,8 +12,13 @@ void main() {
         create: (context) => ParticipantProvider(),
       )
     ],
-    child: const MyApp(),
-  ));
+    child: MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const MyApp(),
+  )));
 }
 
 class MyApp extends StatefulWidget {
@@ -39,11 +44,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: SafeArea(
+    return SafeArea(
         maintainBottomViewPadding: true,
 
         child: Scaffold(
@@ -68,7 +69,6 @@ class _MyAppState extends State<MyApp> {
             onTap: _bottomNavigationTap,
           ),
         ),
-      ),
     );
   }
 }
