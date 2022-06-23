@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gambling/app/provider/betting_provider.dart';
 import 'package:gambling/app/provider/participant_provider.dart';
+import 'package:gambling/app/provider/start_provider.dart';
 import 'package:provider/provider.dart';
 
 class GamblingPage extends StatefulWidget {
@@ -13,7 +14,7 @@ class GamblingPage extends StatefulWidget {
 class _GamblingPageState extends State<GamblingPage> {
   late ParticipantProvider _participant;
   late BettingProvider _betting;
-  var start = false;
+  late StartProvider _start;
   var id = 0;
   var money = 0;
   var userName = '';
@@ -22,6 +23,7 @@ class _GamblingPageState extends State<GamblingPage> {
   Widget build(BuildContext context) {
     _participant = Provider.of<ParticipantProvider>(context);
     _betting = Provider.of<BettingProvider>(context);
+    _start = Provider.of<StartProvider>(context);
 
     return Column(
       children: <Widget>[
@@ -29,7 +31,7 @@ class _GamblingPageState extends State<GamblingPage> {
           flex: 1,
           child: Column(
             children: <Widget>[
-              start ? Container(
+              _start.start ? Container(
                 alignment: Alignment.center,
                 child: Text(_betting.totalBetting().toString()),
               ) : const Text(''),
@@ -38,20 +40,16 @@ class _GamblingPageState extends State<GamblingPage> {
                 child: ElevatedButton(
                   onPressed: () {
 
-                    if(!start){
+                    if(!_start.start){
                       _betting.init(userList: _participant.userList);
-                      setState(() {
-                        start = !start;
-                      });
+                      _start.changeStart();
                     } else {
                       _betting.clear();
-                      setState(() {
-                        start = !start;
-                      });
+                      _start.changeStart();
                     }
 
                   },
-                  child: start ? const Text('승리') : const Text('시작'),
+                  child: _start.start ? const Text('승리') : const Text('시작'),
                 ),
               )
             ],
@@ -61,7 +59,7 @@ class _GamblingPageState extends State<GamblingPage> {
           flex: 1,
           child: Row(
             children: <Widget>[
-              start ? Expanded(
+              _start.start ? Expanded(
                 child: ListView.builder(
                   itemCount: _participant.userList.length,
                   itemBuilder: (context, index) {
