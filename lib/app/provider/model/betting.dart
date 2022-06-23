@@ -14,6 +14,6 @@ class Betting{
     die = true;
   }
   void moneyChange({required int money}) {
-    bettingMoney = money;
+    bettingMoney += money;
   }
 }

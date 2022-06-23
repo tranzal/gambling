@@ -10,7 +10,7 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
   @override
   void betting({required int id, required int money, bool? allIn}) {
     findData(id: id, function: (index) {
-      bettingList[index].moneyChange(money: bettingList[index].bettingMoney + money);
+      bettingList[index].moneyChange(money: money);
       if(allIn ?? false){
         bettingList[index].allInCheck();
       }
@@ -22,6 +22,7 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
   void init({required List<User> userList}) {
     for (var user in userList) {
       bettingList.add(Betting(id: user.id, bettingMoney: 0));
+
     }
     notifyListeners();
   }
@@ -53,6 +54,17 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
         break;
       }
     }
+  }
+
+  @override
+  int totalBetting() {
+    var total = 0;
+
+    for (var element in bettingList) {
+      total += element.bettingMoney;
+    }
+
+    return total;
   }
 
 }

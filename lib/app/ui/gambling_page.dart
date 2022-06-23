@@ -13,6 +13,7 @@ class GamblingPage extends StatefulWidget {
 class _GamblingPageState extends State<GamblingPage> {
   late ParticipantProvider _participant;
   late BettingProvider _betting;
+  var start = false;
   var id = 0;
   var money = 0;
   var userName = '';
@@ -26,30 +27,58 @@ class _GamblingPageState extends State<GamblingPage> {
       children: <Widget>[
         Flexible(
           flex: 1,
-          child: Container(
+          child: Column(
+            children: <Widget>[
+              start ? Container(
+                alignment: Alignment.center,
+                child: Text(_betting.totalBetting().toString()),
+              ) : const Text(''),
+              Container(
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  onPressed: () {
 
+                    if(!start){
+                      _betting.init(userList: _participant.userList);
+                      setState(() {
+                        start = !start;
+                      });
+                    } else {
+                      _betting.clear();
+                      setState(() {
+                        start = !start;
+                      });
+                    }
+
+                  },
+                  child: start ? const Text('승리') : const Text('시작'),
+                ),
+              )
+            ],
           ),
         ),
         Flexible(
           flex: 1,
           child: Row(
             children: <Widget>[
-              Expanded(
+              start ? Expanded(
                 child: ListView.builder(
                   itemCount: _participant.userList.length,
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () {
-                        setState(() {
-                          id = _participant.userList[index].id;
-                          money = _participant.userList[index].money;
-                          userName = _participant.userList[index].userName;
-                        });
+                        if(!_betting.bettingList[index].die && !_betting.bettingList[index].allIn) {
+                          setState(() {
+                            id = _participant.userList[index].id;
+                            money = _participant.userList[index].money;
+                            userName = _participant.userList[index].userName;
+                          });
+                        }
                       },
                       child: Container(
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          color: _participant.userList[index].id == id ? Colors.yellow : Colors.white,
+                            color: userListColorCheck(index),
                             borderRadius: BorderRadius.circular(5),
                             border: Border.all(
                                 color: Colors.black, width: 1, style: BorderStyle.solid)),
@@ -64,12 +93,14 @@ class _GamblingPageState extends State<GamblingPage> {
                     );
                   },
                 ),
-              ),
+              ) : const Text('시작해 주세요'),
               Expanded(
                 child: GridView.count(
                   crossAxisCount: 2,
                   children: [
-                    // ElevatedButton(onPressed: () {}, child: const Text('콜')),
+                    // ElevatedButton(onPressed: () {
+                    //
+                    // }, child: const Text('콜')),
                     // ElevatedButton(onPressed: () {}, child: const Text('하프')),
                     // ElevatedButton(onPressed: () {}, child: const Text('쿼터')),
                     // ElevatedButton(onPressed: () {}, child: const Text('따당')),
@@ -84,4 +115,19 @@ class _GamblingPageState extends State<GamblingPage> {
       ],
     );
   }
+
+  Color userListColorCheck(int index){
+
+    if(_betting.bettingList[index].die) {
+      return Colors.grey;
+    }
+    if(_betting.bettingList[index].allIn) {
+      return Colors.red;
+    }
+    if(_participant.userList[index].id == id) {
+      return Colors.yellow;
+    }
+    return Colors.white;
+  }
 }
+

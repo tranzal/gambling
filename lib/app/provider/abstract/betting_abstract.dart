@@ -9,4 +9,5 @@ abstract class BettingAbstract {
   void bettingDefaultChange({required int bettingCost});
   void die({required int id});
   void findData({required int id, required Function(int) function});
+  int totalBetting();
 }
