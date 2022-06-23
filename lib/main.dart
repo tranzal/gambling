@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gambling/app/provider/betting_provider.dart';
 import 'package:gambling/app/provider/participant_provider.dart';
 import 'package:gambling/app/ui/gambling_page.dart';
 import 'package:gambling/app/ui/participant_page.dart';
@@ -10,6 +11,9 @@ void main() {
     providers: [
       ChangeNotifierProvider(
         create: (context) => ParticipantProvider(),
+      ),
+      ChangeNotifierProvider(
+        create: (context) => BettingProvider(),
       )
     ],
     child: MaterialApp(
