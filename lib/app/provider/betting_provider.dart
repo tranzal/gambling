@@ -7,22 +7,12 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
   var bettingList = <Betting>[];
   var bettingDefault = 100;
 
-  @override
-  void betting({required int id, required int money, bool? allIn}) {
-    findData(id: id, function: (index) {
-      bettingList[index].moneyChange(money: money);
-      if(allIn ?? false){
-        bettingList[index].allInCheck();
-      }
-    });
-    notifyListeners();
-  }
 
   @override
   void init({required List<User> userList}) {
     for (var user in userList) {
-      bettingList.add(Betting(id: user.id, bettingMoney: 0));
-
+      bettingList.add(Betting(id: user.id, bettingMoney: bettingDefault));
+      user.money -= bettingDefault;
     }
     notifyListeners();
   }
@@ -36,18 +26,16 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
   @override
   void bettingDefaultChange({required int bettingCost}) {
     bettingDefault = bettingCost;
-    debugPrint(bettingDefault.toString());
     notifyListeners();
   }
 
   @override
   void die({required int id}) {
-    findData(id: id, function: (index) => bettingList[index].dieCheck());
+    _findData(id: id, function: (index) => bettingList[index].dieCheck());
     notifyListeners();
   }
 
-  @override
-  void findData({required int id, required Function(int) function}) {
+  void _findData({required int id, required Function(int) function}) {
     for (var index = 0; index < bettingList.length; index++) {
       if (bettingList[index].id == id) {
         function(index);
@@ -59,12 +47,67 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
   @override
   int totalBetting() {
     var total = 0;
-
     for (var element in bettingList) {
       total += element.bettingMoney;
     }
-
     return total;
+  }
+
+  @override
+  void stop({required List<User> userList}) {
+    for (var index = 0 ; index < bettingList.length ; index ++) {
+      userList[index].money += bettingList[index].bettingMoney;
+    }
+    clear();
+    notifyListeners();
+  }
+
+  @override
+  void winner({required List<User> userList, required int id}) {
+    _findData(id: id, function: (index) {
+      userList[index].money += totalBetting();
+    });
+    clear();
+    notifyListeners();
+  }
+
+  @override
+  void call({required int id, required List<User> userList}) {
+    _findData(id: id, function: (index) {
+      bettingList[index].moneyChange(money: bettingDefault);
+      userList[index].money -= bettingDefault;
+    });
+    notifyListeners();
+  }
+
+  @override
+  void double({required int id, required List<User> userList}) {
+    _findData(id: id, function: (index) {
+      var double = bettingDefault * 2;
+      bettingList[index].moneyChange(money: double);
+      userList[index].money -= double;
+    });
+    notifyListeners();
+  }
+
+  @override
+  void half({required int id, required List<User> userList}) {
+    _findData(id: id, function: (index) {
+      var half = bettingDefault ~/ 2 + bettingDefault;
+      bettingList[index].moneyChange(money: half);
+      userList[index].money -= half;
+    });
+    notifyListeners();
+  }
+
+  @override
+  void quarter({required int id, required List<User> userList}) {
+    _findData(id: id, function: (index) {
+      var quarter = bettingDefault ~/ 4 + bettingDefault;
+      bettingList[index].moneyChange(money: quarter);
+      userList[index].money -= quarter;
+    });
+    notifyListeners();
   }
 
 }

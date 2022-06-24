@@ -4,4 +4,5 @@ abstract class ParticipantAbstract {
   void changeMoney({required int id, required int money});
   void findData({required int id, required Function(int) function});
   int getLastIndex();
+  int getMoney({required int id});
 }

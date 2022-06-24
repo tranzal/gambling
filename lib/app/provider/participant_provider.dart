@@ -40,5 +40,15 @@ class ParticipantProvider extends ChangeNotifier implements ParticipantAbstract 
     }
     return 0;
   }
+
+  @override
+  int getMoney({required int id}) {
+    for (var index = 0 ; index < userList.length ; index ++) {
+      if(userList[index].id == id){
+        return userList[index].money;
+      }
+    }
+    return 0;
+  }
 }
 
