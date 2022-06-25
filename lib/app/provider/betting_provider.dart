@@ -78,8 +78,12 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
   }
 
   @override
-  void call({required int id, required List<User> userList}) {
-    _bettingProcess(id: id, userList: userList);
+  void call({required int id, required List<User> userList}){
+    _findData(id: id, function: (index) {
+    bettingList[index].moneyChange(money: _lastBetting);
+    userList[index].moneyChange(money: userList[index].getMoney() - _lastBetting);
+    bettingList[index].bettingCheckChange(check: true);
+    });
     notifyListeners();
   }
 
@@ -117,8 +121,10 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
     _findData(id: id, function: (index) {
       bettingList[index].moneyChange(money: _lastBetting);
       userList[index].moneyChange(money: userList[index].getMoney() - _lastBetting);
-      bettingList[index].bettingCheckChange(check: true);
     });
+    for(var betting in bettingList) {
+      betting.bettingCheckChange(check: false);
+    }
   }
 
   @override
@@ -127,5 +133,41 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
     for(var betting in bettingList){
       betting.bettingCheckChange(check: false);
     }
+  }
+
+  @override
+  void allIn({required int id, required List<User> userList}) {
+    _findData(id: id, function: (index) {
+      bettingList[index].moneyChange(money: userList[index].getMoney());
+      userList[index].moneyChange(money: 0);
+      bettingList[index].bettingCheckChange(check: true);
+      bettingList[index].allInCheck();
+    });
+  }
+
+  @override
+  bool bettingCheck() {
+    bool temp = true;
+    for(var betting in bettingList) {
+      if(!betting.getBetting()) {
+       temp = false;
+      }
+    }
+    return temp;
+  }
+
+  @override
+  bool moreBettingCheck() {
+    if(_lastBetting == _bettingCheck) {
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  void check({required int id, required List<User> userList}) {
+    _findData(id: id, function: (index) {
+      bettingList[index].bettingCheckChange(check: true);
+    });
   }
 }

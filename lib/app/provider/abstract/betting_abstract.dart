@@ -7,6 +7,7 @@ abstract class BettingAbstract {
   void half({required int id, required List<User> userList});
   void quarter({required int id, required List<User> userList});
   void double({required int id, required List<User> userList});
+  void check({required int id, required List<User> userList});
   void init({required List<User> userList});
   void clear();
   void bettingDefaultChange({required int bettingCost});
@@ -15,4 +16,7 @@ abstract class BettingAbstract {
   void stop({required List<User> userList});
   void winner({required List<User> userList, required int id});
   void next();
+  void allIn({required int id, required List<User> userList});
+  bool bettingCheck();
+  bool moreBettingCheck();
 }
