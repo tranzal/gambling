@@ -1,19 +1,47 @@
 class Betting{
-  late int id;
-  late int bettingMoney;
-  bool allIn = false;
-  bool die = false;
+  late int _id;
+  late int _bettingMoney;
+  bool _allIn = false;
+  bool _die = false;
+  bool _betting = false;
 
 
-  Betting({required this.id, required this.bettingMoney});
+  Betting({required int id, required int bettingMoney}) {
+    _id = id;
+    _bettingMoney = bettingMoney;
+  }
 
   void allInCheck() {
-    allIn = true;
+    _allIn = true;
   }
   void dieCheck(){
-    die = true;
+    _die = true;
   }
   void moneyChange({required int money}) {
-    bettingMoney += money;
+    _bettingMoney += money;
+  }
+
+  void bettingCheckChange({required bool check}) {
+    _betting = check;
+  }
+
+  bool getAllIn() {
+    return _allIn;
+  }
+
+  bool getDie() {
+    return _die;
+  }
+
+  int getMoney() {
+    return _bettingMoney;
+  }
+
+  bool getBetting(){
+    return _betting;
+  }
+
+  int getId() {
+    return _id;
   }
 }

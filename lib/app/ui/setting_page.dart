@@ -16,7 +16,7 @@ class _SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
     _betting = Provider.of<BettingProvider>(context);
-    bettingDefault.text = _betting.bettingDefault.toString();
+    bettingDefault.text = _betting.getDefaultBetting().toString();
     return Column(
       children: <Widget>[
         Row(

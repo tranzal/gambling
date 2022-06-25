@@ -39,7 +39,11 @@ class _GamblingPageState extends State<GamblingPage> {
                       alignment: Alignment.center,
                       child: Text(_betting.totalBetting().toString()),
                     ),
-                    gameButton()
+                    gameButton(),
+                    if(_start.start) Container(
+                      alignment: Alignment.center,
+                      child: Text(_betting.getBettingAmount().toString()),
+                    )
                   ],
                 ),
               )
@@ -56,11 +60,11 @@ class _GamblingPageState extends State<GamblingPage> {
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () {
-                        if(!_betting.bettingList[index].die && !_betting.bettingList[index].allIn) {
+                        if(!_betting.bettingList[index].getDie() && !_betting.bettingList[index].getAllIn()) {
                           setState(() {
-                            id = _participant.userList[index].id;
-                            money = _participant.userList[index].money;
-                            userName = _participant.userList[index].userName;
+                            id = _participant.userList[index].getId();
+                            money = _participant.userList[index].getMoney();
+                            userName = _participant.userList[index].getName();
                           });
                         }
                       },
@@ -74,8 +78,8 @@ class _GamblingPageState extends State<GamblingPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Text(_participant.userList[index].userName),
-                            Text('금액 : ${_participant.userList[index].money}'),
+                            Text(_participant.userList[index].getName()),
+                            Text('금액 : ${_participant.userList[index].getMoney()}'),
                           ],
                         ),
                       ),
@@ -93,13 +97,13 @@ class _GamblingPageState extends State<GamblingPage> {
 
   Color userListColorCheck(int index){
 
-    if(_betting.bettingList[index].die) {
+    if(_betting.bettingList[index].getDie()) {
       return Colors.grey;
     }
-    if(_betting.bettingList[index].allIn) {
+    if(_betting.bettingList[index].getAllIn()) {
       return Colors.red;
     }
-    if(_participant.userList[index].id == id) {
+    if(_participant.userList[index].getId() == id) {
       return Colors.yellow;
     }
     return Colors.white;

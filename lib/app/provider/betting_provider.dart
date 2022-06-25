@@ -5,33 +5,30 @@ import 'package:gambling/app/provider/model/user.dart';
 
 class BettingProvider extends ChangeNotifier implements BettingAbstract {
   var bettingList = <Betting>[];
-  var bettingDefault = 100;
-  var lastBetting = 0;
-  var bettingCheck = 0;
+  var _bettingDefault = 100;
+  var _lastBetting = 0;
 
 
   @override
   void init({required List<User> userList}) {
     for (var user in userList) {
-      bettingList.add(Betting(id: user.id, bettingMoney: bettingDefault));
-      user.money -= bettingDefault;
+      bettingList.add(Betting(id: user.getId(), bettingMoney: _bettingDefault));
+      user.moneyChange(money: user.getMoney() - _bettingDefault);
     }
-    lastBetting = bettingDefault;
-    bettingCheck = bettingDefault;
+    _lastBetting = _bettingDefault;
     notifyListeners();
   }
 
   @override
   void clear() {
     bettingList.clear();
-    lastBetting = 0;
-    bettingCheck = 0;
+    _lastBetting = 0;
     notifyListeners();
   }
 
   @override
   void bettingDefaultChange({required int bettingCost}) {
-    bettingDefault = bettingCost;
+    _bettingDefault = bettingCost;
     notifyListeners();
   }
 
@@ -43,7 +40,7 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
 
   void _findData({required int id, required Function(int) function}) {
     for (var index = 0; index < bettingList.length; index++) {
-      if (bettingList[index].id == id) {
+      if (bettingList[index].getId() == id) {
         function(index);
         break;
       }
@@ -54,7 +51,7 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
   int totalBetting() {
     var total = 0;
     for (var element in bettingList) {
-      total += element.bettingMoney;
+      total += element.getMoney();
     }
     return total;
   }
@@ -62,7 +59,7 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
   @override
   void stop({required List<User> userList}) {
     for (var index = 0 ; index < bettingList.length ; index ++) {
-      userList[index].money += bettingList[index].bettingMoney;
+      userList[index].moneyChange(money: userList[index].getMoney() + bettingList[index].getMoney());
     }
     clear();
     notifyListeners();
@@ -71,7 +68,7 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
   @override
   void winner({required List<User> userList, required int id}) {
     _findData(id: id, function: (index) {
-      userList[index].money += totalBetting();
+      userList[index].moneyChange(money: userList[index].getMoney() + totalBetting());
     });
     clear();
     notifyListeners();
@@ -80,18 +77,18 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
   @override
   void call({required int id, required List<User> userList}) {
     _findData(id: id, function: (index) {
-      bettingList[index].moneyChange(money: lastBetting);
-      userList[index].money -= lastBetting;
+      bettingList[index].moneyChange(money: _lastBetting);
+      userList[index].moneyChange(money: userList[index].getMoney() - _lastBetting);
     });
     notifyListeners();
   }
 
   @override
   void double({required int id, required List<User> userList}) {
-    lastBetting *= 2;
+    _lastBetting *= 2;
     _findData(id: id, function: (index) {
-      bettingList[index].moneyChange(money: lastBetting);
-      userList[index].money -= lastBetting;
+      bettingList[index].moneyChange(money: _lastBetting);
+      userList[index].moneyChange(money: userList[index].getMoney() - _lastBetting);
     });
 
     notifyListeners();
@@ -99,21 +96,29 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
 
   @override
   void half({required int id, required List<User> userList}) {
-    lastBetting = lastBetting ~/ 2 + lastBetting;
+    _lastBetting = _lastBetting ~/ 2 + _lastBetting;
     _findData(id: id, function: (index) {
-      bettingList[index].moneyChange(money: lastBetting);
-      userList[index].money -= lastBetting;
+      bettingList[index].moneyChange(money: _lastBetting);
+      userList[index].moneyChange(money: userList[index].getMoney() - _lastBetting);
     });
     notifyListeners();
   }
 
   @override
   void quarter({required int id, required List<User> userList}) {
-    lastBetting = lastBetting ~/ 4 + lastBetting;
+    _lastBetting = _lastBetting ~/ 4 + _lastBetting;
     _findData(id: id, function: (index) {
-      bettingList[index].moneyChange(money: lastBetting);
-      userList[index].money -= lastBetting;
+      bettingList[index].moneyChange(money: _lastBetting);
+      userList[index].moneyChange(money: userList[index].getMoney() - _lastBetting);
     });
     notifyListeners();
+  }
+
+  int getDefaultBetting() {
+    return _bettingDefault;
+  }
+
+  int getBettingAmount() {
+    return _lastBetting;
   }
 }

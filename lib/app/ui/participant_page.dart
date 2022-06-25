@@ -38,25 +38,25 @@ class _ParticipantPageState extends State<ParticipantPage> {
               return GestureDetector(
                 onTap: () {
                   setState(() {
-                    name = _participant.userList[index].userName;
-                    money = _participant.userList[index].money;
-                    id = _participant.userList[index].id;
-                    nameFieldText.text = _participant.userList[index].userName;
-                    moneyFieldText.text = _participant.userList[index].money.toString();
+                    name = _participant.userList[index].getName();
+                    money = _participant.userList[index].getMoney();
+                    id = _participant.userList[index].getId();
+                    nameFieldText.text = _participant.userList[index].getName();
+                    moneyFieldText.text = _participant.userList[index].getMoney().toString();
                   });
                 },
                 child: Container(
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: _participant.userList[index].id == id ? Colors.yellow : Colors.white,
+                    color: _participant.userList[index].getId() == id ? Colors.yellow : Colors.white,
                       borderRadius: BorderRadius.circular(5),
                       border: Border.all(
                           color: Colors.black, width: 1, style: BorderStyle.solid)),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text(_participant.userList[index].userName),
-                      Text('금액 : ${_participant.userList[index].money}'),
+                      Text(_participant.userList[index].getName()),
+                      Text('금액 : ${_participant.userList[index].getMoney()}'),
                     ],
                   ),
                 ),

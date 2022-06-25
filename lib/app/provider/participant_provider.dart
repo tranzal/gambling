@@ -19,14 +19,14 @@ class ParticipantProvider extends ChangeNotifier implements ParticipantAbstract 
 
   @override
   void changeMoney({required int id, required int money}){
-    findData(id: id, function: (index) => userList[index].money = money);
+    findData(id: id, function: (index) => userList[index].moneyChange(money: money));
     notifyListeners();
   }
 
   @override
   void findData({required int id, required Function(int) function}) {
     for (var index = 0 ; index < userList.length ; index ++) {
-      if(userList[index].id == id){
+      if(userList[index].getId() == id){
         function(index);
         break;
       }
@@ -36,7 +36,7 @@ class ParticipantProvider extends ChangeNotifier implements ParticipantAbstract 
   @override
   int getLastIndex() {
     if(userList.isNotEmpty){
-      return  userList[userList.length - 1].id;
+      return  userList[userList.length - 1].getId();
     }
     return 0;
   }
@@ -44,8 +44,8 @@ class ParticipantProvider extends ChangeNotifier implements ParticipantAbstract 
   @override
   int getMoney({required int id}) {
     for (var index = 0 ; index < userList.length ; index ++) {
-      if(userList[index].id == id){
-        return userList[index].money;
+      if(userList[index].getId() == id){
+        return userList[index].getMoney();
       }
     }
     return 0;
