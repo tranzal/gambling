@@ -7,7 +7,6 @@ class StartProvider extends ChangeNotifier implements StartAbstract{
   @override
   void changeStart() {
     start = !start;
-    debugPrint(start.toString());
     notifyListeners();
   }
 }
