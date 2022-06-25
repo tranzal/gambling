@@ -7,6 +7,7 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
   var bettingList = <Betting>[];
   var _bettingDefault = 100;
   var _lastBetting = 0;
+  var _bettingCheck = 0;
 
 
   @override
@@ -16,6 +17,7 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
       user.moneyChange(money: user.getMoney() - _bettingDefault);
     }
     _lastBetting = _bettingDefault;
+    _bettingCheck = _bettingDefault;
     notifyListeners();
   }
 
@@ -23,6 +25,7 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
   void clear() {
     bettingList.clear();
     _lastBetting = 0;
+    _bettingCheck = 0;
     notifyListeners();
   }
 
@@ -76,20 +79,14 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
 
   @override
   void call({required int id, required List<User> userList}) {
-    _findData(id: id, function: (index) {
-      bettingList[index].moneyChange(money: _lastBetting);
-      userList[index].moneyChange(money: userList[index].getMoney() - _lastBetting);
-    });
+    _bettingProcess(id: id, userList: userList);
     notifyListeners();
   }
 
   @override
   void double({required int id, required List<User> userList}) {
     _lastBetting *= 2;
-    _findData(id: id, function: (index) {
-      bettingList[index].moneyChange(money: _lastBetting);
-      userList[index].moneyChange(money: userList[index].getMoney() - _lastBetting);
-    });
+    _bettingProcess(id: id, userList: userList);
 
     notifyListeners();
   }
@@ -97,20 +94,14 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
   @override
   void half({required int id, required List<User> userList}) {
     _lastBetting = _lastBetting ~/ 2 + _lastBetting;
-    _findData(id: id, function: (index) {
-      bettingList[index].moneyChange(money: _lastBetting);
-      userList[index].moneyChange(money: userList[index].getMoney() - _lastBetting);
-    });
+    _bettingProcess(id: id, userList: userList);
     notifyListeners();
   }
 
   @override
   void quarter({required int id, required List<User> userList}) {
     _lastBetting = _lastBetting ~/ 4 + _lastBetting;
-    _findData(id: id, function: (index) {
-      bettingList[index].moneyChange(money: _lastBetting);
-      userList[index].moneyChange(money: userList[index].getMoney() - _lastBetting);
-    });
+    _bettingProcess(id: id, userList: userList);
     notifyListeners();
   }
 
@@ -120,5 +111,21 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
 
   int getBettingAmount() {
     return _lastBetting;
+  }
+
+  void _bettingProcess({required int id, required List<User> userList}){
+    _findData(id: id, function: (index) {
+      bettingList[index].moneyChange(money: _lastBetting);
+      userList[index].moneyChange(money: userList[index].getMoney() - _lastBetting);
+      bettingList[index].bettingCheckChange(check: true);
+    });
+  }
+
+  @override
+  void next(){
+    _bettingCheck = _lastBetting;
+    for(var betting in bettingList){
+      betting.bettingCheckChange(check: false);
+    }
   }
 }

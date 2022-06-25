@@ -28,6 +28,21 @@ class _ParticipantPageState extends State<ParticipantPage> {
   @override
   Widget build(BuildContext context) {
     _participant = Provider.of<ParticipantProvider>(context);
+
+    if(_participant.userList.isEmpty) {
+      _participant.add(
+          id: _participant.getLastIndex() + 1,
+          userName: '1',
+          money: 1000);
+      _participant.add(
+          id: _participant.getLastIndex() + 1,
+          userName: '2',
+          money: 1000);
+      _participant.add(
+          id: _participant.getLastIndex() + 1,
+          userName: '3',
+          money: 1000);
+    }
     return Column(
       children: <Widget>[
         Flexible(

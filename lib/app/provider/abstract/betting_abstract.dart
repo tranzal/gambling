@@ -14,4 +14,5 @@ abstract class BettingAbstract {
   int totalBetting();
   void stop({required List<User> userList});
   void winner({required List<User> userList, required int id});
+  void next();
 }

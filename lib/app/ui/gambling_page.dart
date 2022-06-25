@@ -30,22 +30,16 @@ class _GamblingPageState extends State<GamblingPage> {
         Flexible(
           flex: 1,
           child: Column(
-            children: <Widget>[
-              Container(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if(_start.start) Container(
                 alignment: Alignment.center,
-                child: Column(
-                  children: [
-                    if(_start.start) Container(
-                      alignment: Alignment.center,
-                      child: Text(_betting.totalBetting().toString()),
-                    ),
-                    gameButton(),
-                    if(_start.start) Container(
-                      alignment: Alignment.center,
-                      child: Text(_betting.getBettingAmount().toString()),
-                    )
-                  ],
-                ),
+                child: Text('전체 금액 : ${_betting.totalBetting().toString()}'),
+              ),
+              gameButton(),
+              if(_start.start) Container(
+                alignment: Alignment.center,
+                child: Text('배팅 : ${_betting.getBettingAmount().toString()}'),
               )
             ],
           ),
@@ -100,11 +94,17 @@ class _GamblingPageState extends State<GamblingPage> {
     if(_betting.bettingList[index].getDie()) {
       return Colors.grey;
     }
+
     if(_betting.bettingList[index].getAllIn()) {
       return Colors.red;
     }
+
     if(_participant.userList[index].getId() == id) {
       return Colors.yellow;
+    }
+
+    if(_betting.bettingList[index].getBetting()) {
+      return Colors.blue;
     }
     return Colors.white;
   }
