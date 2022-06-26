@@ -88,6 +88,16 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
   }
 
   @override
+  void same({required int id, required List<User> userList}){
+    _findData(id: id, function: (index) {
+      bettingList[index].moneyChange(money: _bettingCheck);
+      userList[index].moneyChange(money: userList[index].getMoney() - _bettingCheck);
+      bettingList[index].bettingCheckChange(check: true);
+    });
+    notifyListeners();
+  }
+
+  @override
   void double({required int id, required List<User> userList}) {
     _lastBetting *= 2;
     _bettingProcess(id: id, userList: userList);

@@ -8,6 +8,7 @@ abstract class BettingAbstract {
   void quarter({required int id, required List<User> userList});
   void double({required int id, required List<User> userList});
   void check({required int id, required List<User> userList});
+  void same({required int id, required List<User> userList});
   void init({required List<User> userList});
   void clear();
   void bettingDefaultChange({required int bettingCost});

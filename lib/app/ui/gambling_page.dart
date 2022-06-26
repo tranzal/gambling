@@ -47,10 +47,17 @@ class _GamblingPageState extends State<GamblingPage> {
                     Container(
                       alignment: Alignment.center,
                       child: Text(
-                          '배팅 : ${_betting.getBettingAmount().toString()}'),
+                          '판돈 : ${_betting.getBettingAmount().toString()}'),
                     ),
                 ],
               )),
+              if(_start.start)
+                if ((_betting.getBettingAmount() >= money) && id != 0)
+                  bettingButtonUtil('올인', Colors.blue, () {
+                    _betting.allIn(id: id, userList: _participant.userList);
+                    stateReset();
+                  }),
+              if(_start.start)
               if (_betting.bettingCheck())
                 ElevatedButton(
                     onPressed: () {
@@ -138,6 +145,9 @@ class _GamblingPageState extends State<GamblingPage> {
     if (!_start.start) {
       return ElevatedButton(
         onPressed: () {
+          if(_participant.userList.isEmpty){
+            return;
+          }
           _betting.init(userList: _participant.userList);
           _start.changeStart();
         },
@@ -154,11 +164,7 @@ class _GamblingPageState extends State<GamblingPage> {
               }
               _betting.winner(userList: _participant.userList, id: id);
               _start.changeStart();
-              setState(() {
-                id = 0;
-                money = 0;
-                userName = '';
-              });
+              stateReset();
             },
             child: const Text('승리'),
           ),
@@ -166,11 +172,7 @@ class _GamblingPageState extends State<GamblingPage> {
             onPressed: () {
               _betting.stop(userList: _participant.userList);
               _start.changeStart();
-              setState(() {
-                id = 0;
-                money = 0;
-                userName = '';
-              });
+              stateReset();
             },
             child: const Text('중지'),
           )
@@ -180,81 +182,10 @@ class _GamblingPageState extends State<GamblingPage> {
   }
 
   Widget bettingButton() {
-    if ((_betting.getBettingAmount() >= _participant.getMoney(id: id)) &&
-        id != 0 &&
-        !_betting.moreBettingCheck()) {
-      return Expanded(
-        child: GridView.count(
-          crossAxisCount: 2,
-          children: [
-            ElevatedButton(
-                onPressed: () {
-                  _betting.allIn(id: id, userList: _participant.userList);
-                  stateReset();
-                },
-                child: const Text('올인')),
-            ElevatedButton(
-                onPressed: () {
-                  _betting.die(id: id);
-                  stateReset();
-                },
-                child: const Text('다이')),
-          ],
-        ),
-      );
-    }
-
-    if(_betting.getBettingAmount() >= _participant.getMoney(id: id)){
-
-    }
-
     return Expanded(
       child: GridView.count(
         crossAxisCount: 2,
-        children: [
-          bettingButtonUtil('콜', _betting.moreBettingCheck() ? Colors.grey : Colors.blue, () {
-            if (_participant.getMoney(id: id) == 0) {
-              return;
-            }
-            if (_betting.moreBettingCheck()) {
-              return;
-            }
-            _betting.call(id: id, userList: _participant.userList);
-            stateReset();
-          }),
-          bettingButtonUtil('하프', Colors.blue, () {
-            if (_participant.getMoney(id: id) == 0) {
-              return;
-            }
-            _betting.half(id: id, userList: _participant.userList);
-            stateReset();
-          }),
-          bettingButtonUtil('쿼터', Colors.blue, () {
-            if (_participant.getMoney(id: id) == 0) {
-              return;
-            }
-            _betting.quarter(id: id, userList: _participant.userList);
-            stateReset();
-          }),
-          bettingButtonUtil('따당', Colors.blue, () {
-            if (_participant.getMoney(id: id) == 0) {
-              return;
-            }
-            _betting.double(id: id, userList: _participant.userList);
-            stateReset();
-          }),
-          bettingButtonUtil('체크', !_betting.moreBettingCheck() ? Colors.grey : Colors.blue, () {
-            if (!_betting.moreBettingCheck()) {
-              return;
-            }
-            _betting.check(id: id, userList: _participant.userList);
-            stateReset();
-          }),
-          bettingButtonUtil('다이', Colors.blue, () {
-            _betting.die(id: id);
-            stateReset();
-          })
-        ],
+        children: buttonList(),
       ),
     );
   }
@@ -276,5 +207,83 @@ class _GamblingPageState extends State<GamblingPage> {
       money = 0;
       userName = '';
     });
+  }
+
+  List<Widget> buttonList() {
+    var buttonList = <Widget>[];
+    var quarter = _betting.getBettingAmount() + (_betting.getBettingAmount() ~/4);
+    var double = _betting.getBettingAmount() * 2;
+    var half = _betting.getBettingAmount() + (_betting.getBettingAmount() ~/2);
+    var bettingPrice = _betting.getBettingAmount();
+    var money = _participant.getMoney(id: id);
+    var moreBetting = _betting.moreBettingCheck();
+    if(!_start.start || id == 0){
+      var title = <String>['콜', '하프', '쿼터', '따당', '삥', '다이'];
+      for(var temp in title){
+        buttonList.add(bettingButtonUtil(temp, Colors.blue, () {}));
+      }
+
+      return buttonList;
+    }
+
+    if(!moreBetting && bettingPrice <= money){
+        buttonList.add(
+            bettingButtonUtil(
+                '콜', moreBetting ? Colors.grey : Colors.blue, () {
+              if (moreBetting) {
+                return;
+              }
+              _betting.call(id: id, userList: _participant.userList);
+              stateReset();
+            })
+        );
+    } else {
+      buttonList.add(bettingButtonUtil('체크', !moreBetting ? Colors.grey : Colors.blue, () {
+        if (!moreBetting) {
+          return;
+        }
+        _betting.check(id: id, userList: _participant.userList);
+        stateReset();
+      }));
+    }
+
+    buttonList.add(bettingButtonUtil('하프',(half <= money) ? Colors.blue : Colors.grey, () {
+      if(!(half <= money)) {
+        return;
+      }
+      _betting.half(id: id, userList: _participant.userList);
+      stateReset();
+    }));
+
+    buttonList.add(bettingButtonUtil('쿼터', (quarter <= money) ? Colors.blue : Colors.grey, () {
+      if(!(quarter <= money)){
+        return;
+      }
+      _betting.quarter(id: id, userList: _participant.userList);
+      stateReset();
+    }));
+
+    buttonList.add(bettingButtonUtil('따당', (double <= money) ? Colors.blue : Colors.grey, () {
+      if(!(double <= money)){
+        return;
+      }
+      _betting.double(id: id, userList: _participant.userList);
+      stateReset();
+    }));
+
+    buttonList.add(bettingButtonUtil('삥', (bettingPrice <= money) ? Colors.blue : Colors.grey, () {
+      if(!(bettingPrice <= money)){
+        return;
+      }
+      _betting.same(id: id, userList: _participant.userList);
+      stateReset();
+    }));
+
+    buttonList.add(bettingButtonUtil('다이', Colors.blue, () {
+      _betting.die(id: id);
+      stateReset();
+    }));
+
+    return buttonList;
   }
 }
