@@ -21,6 +21,7 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
     }
     _lastBetting = _bettingDefault;
     _bettingCheck = _bettingDefault;
+    _beforeBetting = _bettingDefault;
     notifyListeners();
   }
 
@@ -30,6 +31,7 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
     _raise = false;
     _lastBetting = 0;
     _bettingCheck = 0;
+    _beforeBetting = 0;
     notifyListeners();
   }
 
@@ -190,5 +192,9 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
     _findData(id: id, function: (index) {
       bettingList[index].bettingCheckChange(check: true);
     });
+  }
+
+  bool raiseCheck() {
+    return _raise;
   }
 }

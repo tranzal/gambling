@@ -4,7 +4,6 @@ class Betting{
   bool _allIn = false;
   bool _die = false;
   bool _betting = false;
-  var _raise = false;
 
   Betting({required int id, required int bettingMoney}) {
     _id = id;
@@ -43,9 +42,5 @@ class Betting{
 
   int getId() {
     return _id;
-  }
-
-  bool raiseCheck() {
-    return _raise;
   }
 }
