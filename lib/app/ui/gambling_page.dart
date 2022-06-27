@@ -216,7 +216,7 @@ class _GamblingPageState extends State<GamblingPage> {
     var half = _betting.getBettingAmount() + (_betting.getBettingAmount() ~/2);
     var bettingPrice = _betting.getBettingAmount();
     var money = _participant.getMoney(id: id);
-    var moreBetting = _betting.moreBettingCheck();
+    var moreBetting = _betting.raiseCheck();
     if(!_start.start || id == 0){
       var title = <String>['콜', '하프', '쿼터', '따당', '삥', '다이'];
       for(var temp in title){
@@ -226,11 +226,11 @@ class _GamblingPageState extends State<GamblingPage> {
       return buttonList;
     }
 
-    if(!moreBetting && bettingPrice <= money){
+    if(moreBetting && bettingPrice <= money && _betting.raiseCheck()){
         buttonList.add(
             bettingButtonUtil(
-                '콜', moreBetting ? Colors.grey : Colors.blue, () {
-              if (moreBetting) {
+                '콜', moreBetting ? Colors.blue : Colors.grey, () {
+              if (!moreBetting) {
                 return;
               }
               _betting.call(id: id, userList: _participant.userList);
@@ -238,8 +238,8 @@ class _GamblingPageState extends State<GamblingPage> {
             })
         );
     } else {
-      buttonList.add(bettingButtonUtil('체크', !moreBetting ? Colors.grey : Colors.blue, () {
-        if (!moreBetting) {
+      buttonList.add(bettingButtonUtil('체크', !moreBetting ? Colors.blue : Colors.grey, () {
+        if (moreBetting) {
           return;
         }
         _betting.check(id: id, userList: _participant.userList);
@@ -271,10 +271,11 @@ class _GamblingPageState extends State<GamblingPage> {
       stateReset();
     }));
 
-    buttonList.add(bettingButtonUtil('삥', (bettingPrice <= money) ? Colors.blue : Colors.grey, () {
-      if(!(bettingPrice <= money)){
+    buttonList.add(bettingButtonUtil('삥', (bettingPrice <= money) && !moreBetting ? Colors.blue : Colors.grey, () {
+      if(!(bettingPrice <= money) && moreBetting){
         return;
       }
+
       _betting.same(id: id, userList: _participant.userList);
       stateReset();
     }));

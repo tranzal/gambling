@@ -7,7 +7,10 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
   var bettingList = <Betting>[];
   var _bettingDefault = 100;
   var _lastBetting = 0;
+  var _beforeBetting = 0;
   var _bettingCheck = 0;
+  var _raise = false;
+
 
 
   @override
@@ -24,6 +27,7 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
   @override
   void clear() {
     bettingList.clear();
+    _raise = false;
     _lastBetting = 0;
     _bettingCheck = 0;
     notifyListeners();
@@ -90,9 +94,10 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
   @override
   void same({required int id, required List<User> userList}){
     _findData(id: id, function: (index) {
-      bettingList[index].moneyChange(money: _bettingCheck);
-      userList[index].moneyChange(money: userList[index].getMoney() - _bettingCheck);
+      bettingList[index].moneyChange(money: _lastBetting);
+      userList[index].moneyChange(money: userList[index].getMoney() - _lastBetting);
       bettingList[index].bettingCheckChange(check: true);
+      _raise = true;
     });
     notifyListeners();
   }
@@ -131,15 +136,21 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
     _findData(id: id, function: (index) {
       bettingList[index].moneyChange(money: _lastBetting);
       userList[index].moneyChange(money: userList[index].getMoney() - _lastBetting);
+      bettingList[index].bettingCheckChange(check: true);
+      _raise = true;
     });
-    for(var betting in bettingList) {
-      betting.bettingCheckChange(check: false);
+
+    for(var index = 0 ; index < bettingList.length ; index ++) {
+      if(bettingList[index].getId() != id){
+        bettingList[index].bettingCheckChange(check: false);
+      }
     }
   }
 
   @override
   void next(){
     _bettingCheck = _lastBetting;
+    _raise = false;
     for(var betting in bettingList){
       betting.bettingCheckChange(check: false);
     }
