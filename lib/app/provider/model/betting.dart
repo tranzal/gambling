@@ -4,6 +4,7 @@ class Betting{
   bool _allIn = false;
   bool _die = false;
   bool _betting = false;
+  int _bettingTime = 0;
 
   Betting({required int id, required int bettingMoney}) {
     _id = id;
@@ -42,5 +43,15 @@ class Betting{
 
   int getId() {
     return _id;
+  }
+
+  int getBettingTime(){
+    return _bettingTime;
+  }
+  void bettingTimeAdd({required int time}) {
+    _bettingTime = time;
+  }
+  void bettingTimeClear() {
+    _bettingTime = 0;
   }
 }

@@ -7,11 +7,10 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
   var bettingList = <Betting>[];
   var _bettingDefault = 100;
   var _lastBetting = 0;
-  var _beforeBetting = 0;
+  var _beforeBetting = <int>[];
   var _bettingCheck = 0;
   var _raise = false;
-
-
+  var _raiseTime = 0;
 
   @override
   void init({required List<User> userList}) {
@@ -21,7 +20,7 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
     }
     _lastBetting = _bettingDefault;
     _bettingCheck = _bettingDefault;
-    _beforeBetting = _bettingDefault;
+    _beforeBetting.add(_bettingDefault);
     notifyListeners();
   }
 
@@ -31,7 +30,8 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
     _raise = false;
     _lastBetting = 0;
     _bettingCheck = 0;
-    _beforeBetting = 0;
+    _beforeBetting.clear();
+    _raiseTime = 0;
     notifyListeners();
   }
 
@@ -85,10 +85,21 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
 
   @override
   void call({required int id, required List<User> userList}){
+
     _findData(id: id, function: (index) {
-    bettingList[index].moneyChange(money: _lastBetting);
-    userList[index].moneyChange(money: userList[index].getMoney() - _lastBetting);
-    bettingList[index].bettingCheckChange(check: true);
+      if(bettingList[index].getBettingTime() == _raiseTime){
+        bettingList[index].moneyChange(money: _lastBetting);
+        userList[index].moneyChange(money: userList[index].getMoney() - _lastBetting);
+        bettingList[index].bettingCheckChange(check: true);
+      } else {
+        var bettingTot = 0;
+        for(var bettingHistory in _beforeBetting) {
+          bettingTot += bettingHistory;
+        }
+        bettingList[index].moneyChange(money: bettingTot);
+        userList[index].moneyChange(money: userList[index].getMoney() - bettingTot);
+        bettingList[index].bettingCheckChange(check: true);
+      }
     });
     notifyListeners();
   }
@@ -139,6 +150,9 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
       bettingList[index].moneyChange(money: _lastBetting);
       userList[index].moneyChange(money: userList[index].getMoney() - _lastBetting);
       bettingList[index].bettingCheckChange(check: true);
+      _beforeBetting.add(_lastBetting);
+      bettingList[index].bettingTimeAdd(time: _raiseTime);
+      _raiseTime++;
       _raise = true;
     });
 
@@ -155,6 +169,7 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
     _raise = false;
     for(var betting in bettingList){
       betting.bettingCheckChange(check: false);
+      betting.bettingTimeClear();
     }
   }
 
