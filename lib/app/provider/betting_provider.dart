@@ -87,15 +87,13 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
   void call({required int id, required List<User> userList}){
 
     _findData(id: id, function: (index) {
-      if(bettingList[index].getBettingTime() == _raiseTime){
+      if(bettingList[index].getBettingTime() == _raiseTime || bettingList[index].getBettingTime() == 0){
         bettingList[index].moneyChange(money: _lastBetting);
         userList[index].moneyChange(money: userList[index].getMoney() - _lastBetting);
         bettingList[index].bettingCheckChange(check: true);
       } else {
-        var bettingTot = 0;
-        for(var bettingHistory in _beforeBetting) {
-          bettingTot += bettingHistory;
-        }
+        var bettingTot = _beforeBetting[_beforeBetting.length - 1] - _beforeBetting[bettingList[index].getBettingTime()];
+
         bettingList[index].moneyChange(money: bettingTot);
         userList[index].moneyChange(money: userList[index].getMoney() - bettingTot);
         bettingList[index].bettingCheckChange(check: true);
@@ -151,8 +149,8 @@ class BettingProvider extends ChangeNotifier implements BettingAbstract {
       userList[index].moneyChange(money: userList[index].getMoney() - _lastBetting);
       bettingList[index].bettingCheckChange(check: true);
       _beforeBetting.add(_lastBetting);
-      bettingList[index].bettingTimeAdd(time: _raiseTime);
       _raiseTime++;
+      bettingList[index].bettingTimeAdd(time: _raiseTime);
       _raise = true;
     });
 
