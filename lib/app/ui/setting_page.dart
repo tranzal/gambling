@@ -23,13 +23,16 @@ class _SettingPageState extends State<SettingPage> {
           children: [
             const Text('최소 배팅액'),
             Flexible(
-                child: TextField(
-                  controller: bettingDefault,
-                  onSubmitted: (changeBettingDefault) {
-                    _betting.bettingDefaultChange(bettingCost: int.parse(changeBettingDefault));
-                    FocusScope.of(context).unfocus();
-                  },
-                  keyboardType: TextInputType.number,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: TextField(
+                    controller: bettingDefault,
+                    onSubmitted: (changeBettingDefault) {
+                      _betting.bettingDefaultChange(bettingCost: int.parse(changeBettingDefault));
+                      FocusScope.of(context).unfocus();
+                    },
+                    keyboardType: TextInputType.number,
+                  ),
                 )
             )
           ],

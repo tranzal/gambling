@@ -29,19 +29,13 @@ class _ParticipantPageState extends State<ParticipantPage> {
   Widget build(BuildContext context) {
     _participant = Provider.of<ParticipantProvider>(context);
 
-    if(_participant.userList.isEmpty) {
+    if (_participant.userList.isEmpty) {
       _participant.add(
-          id: _participant.getLastIndex() + 1,
-          userName: '1',
-          money: 1000);
+          id: _participant.getLastIndex() + 1, userName: '1', money: 1000);
       _participant.add(
-          id: _participant.getLastIndex() + 1,
-          userName: '2',
-          money: 1000);
+          id: _participant.getLastIndex() + 1, userName: '2', money: 1000);
       _participant.add(
-          id: _participant.getLastIndex() + 1,
-          userName: '3',
-          money: 1000);
+          id: _participant.getLastIndex() + 1, userName: '3', money: 1000);
     }
     return Column(
       children: <Widget>[
@@ -57,20 +51,26 @@ class _ParticipantPageState extends State<ParticipantPage> {
                     money = _participant.userList[index].getMoney();
                     id = _participant.userList[index].getId();
                     nameFieldText.text = _participant.userList[index].getName();
-                    moneyFieldText.text = _participant.userList[index].getMoney().toString();
+                    moneyFieldText.text =
+                        _participant.userList[index].getMoney().toString();
                   });
                 },
                 child: Container(
+                  padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: _participant.userList[index].getId() == id ? Colors.yellow : Colors.white,
+                      color: _participant.userList[index].getId() == id
+                          ? Colors.yellow
+                          : Colors.white,
                       borderRadius: BorderRadius.circular(5),
                       border: Border.all(
-                          color: Colors.black, width: 1, style: BorderStyle.solid)),
-                  child: Row(
+                          color: Colors.black,
+                          width: 1,
+                          style: BorderStyle.solid)),
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text(_participant.userList[index].getName()),
+                      Text('이름 : ${_participant.userList[index].getName()}'),
                       Text('금액 : ${_participant.userList[index].getMoney()}'),
                     ],
                   ),
@@ -85,103 +85,103 @@ class _ParticipantPageState extends State<ParticipantPage> {
             children: <Widget>[
               Expanded(
                   child: Column(
-                    children: <Widget>[
-                      TextField(
-                        decoration: const InputDecoration(
-                          hintText: '이름',
-                        ),
-                        onChanged: (name) {
-                          setState(() {
-                            this.name = name;
-                          });
-                        },
-                        controller: nameFieldText,
-                        onSubmitted: (_) {
-                          FocusScope.of(context).requestFocus(_moneyFocus);
-                        },
-                        focusNode: _nameFocus,
-                        keyboardType: TextInputType.text,
-                      ),
-                      TextField(
-                        decoration: const InputDecoration(
-                          hintText: '금액',
-                        ),
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
-                        onChanged: (money) {
-                          setState(() {
-                            this.money = int.parse(money.isEmpty ? '0' : money);
-                          });
-                        },
-                        keyboardType: TextInputType.number,
-                        controller: moneyFieldText,
-                        focusNode: _moneyFocus,
-                        onSubmitted: (_) {
-                          if(name.isNotEmpty && money != 0) {
-                            _participant.add(
-                                id: _participant.getLastIndex() + 1,
-                                userName: name,
-                                money: money);
-                            setState(() {
-                              name = '';
-                              money = 0;
-                              id = 0;
-                            });
-                            clearText();
-                          }
-                          FocusScope.of(context).unfocus();
-                        },
-                      )
+                children: <Widget>[
+                  TextField(
+                    decoration: const InputDecoration(
+                      hintText: '이름',
+                    ),
+                    onChanged: (name) {
+                      setState(() {
+                        this.name = name;
+                      });
+                    },
+                    controller: nameFieldText,
+                    onSubmitted: (_) {
+                      FocusScope.of(context).requestFocus(_moneyFocus);
+                    },
+                    focusNode: _nameFocus,
+                    keyboardType: TextInputType.text,
+                  ),
+                  TextField(
+                    decoration: const InputDecoration(
+                      hintText: '금액',
+                    ),
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly
                     ],
+                    onChanged: (money) {
+                      setState(() {
+                        this.money = int.parse(money.isEmpty ? '0' : money);
+                      });
+                    },
+                    keyboardType: TextInputType.number,
+                    controller: moneyFieldText,
+                    focusNode: _moneyFocus,
+                    onSubmitted: (_) {
+                      if (name.isNotEmpty && money != 0) {
+                        _participant.add(
+                            id: _participant.getLastIndex() + 1,
+                            userName: name,
+                            money: money);
+                        setState(() {
+                          name = '';
+                          money = 0;
+                          id = 0;
+                        });
+                        clearText();
+                      }
+                      FocusScope.of(context).unfocus();
+                    },
                   )
-              ),
+                ],
+              )),
               Expanded(
                   child: Column(
                 children: <Widget>[
-                  id == 0 ? ElevatedButton(
-                      onPressed: () {
-                        if(name.isNotEmpty && money != 0) {
-                          _participant.add(
-                              id: _participant.getLastIndex() + 1,
-                              userName: name,
-                              money: money);
-                          setState(() {
-                            name = '';
-                            money = 0;
-                            id = 0;
-                          });
-                          clearText();
-                          FocusScope.of(context).unfocus();
-                        }
-                      },
-                      child: const Text('추가')) : ElevatedButton(
-                      onPressed: () {
-                        if(name.isNotEmpty && money != 0) {
-                          _participant.changeMoney(id: id, money: money);
-                          setState(() {
-                            name = '';
-                            money = 0;
-                            id = 0;
-                          });
-                          clearText();
-                          FocusScope.of(context).unfocus();
-                        }
-                      },
-                      child: const Text('수정')),
+                  id == 0
+                      ? ElevatedButton(
+                          onPressed: () {
+                            if (name.isNotEmpty && money != 0) {
+                              _participant.add(
+                                  id: _participant.getLastIndex() + 1,
+                                  userName: name,
+                                  money: money);
+                              setState(() {
+                                name = '';
+                                money = 0;
+                                id = 0;
+                              });
+                              clearText();
+                              FocusScope.of(context).unfocus();
+                            }
+                          },
+                          child: const Text('추가'))
+                      : ElevatedButton(
+                          onPressed: () {
+                            if (name.isNotEmpty && money != 0) {
+                              _participant.changeMoney(id: id, money: money);
+                              setState(() {
+                                name = '';
+                                money = 0;
+                                id = 0;
+                              });
+                              clearText();
+                              FocusScope.of(context).unfocus();
+                            }
+                          },
+                          child: const Text('수정')),
                   ElevatedButton(
                       onPressed: () {
-                          _participant.remove(id: id);
-                          setState(() {
-                            name = '';
-                            money = 0;
-                            id = 0;
-                          });
-                          clearText();
-                          FocusScope.of(context).unfocus();
+                        _participant.remove(id: id);
+                        setState(() {
+                          name = '';
+                          money = 0;
+                          id = 0;
+                        });
+                        clearText();
+                        FocusScope.of(context).unfocus();
                       },
-                      child: const Text('제거')
-                  ),
+                      child: const Text('제거')),
                 ],
               )),
             ],
